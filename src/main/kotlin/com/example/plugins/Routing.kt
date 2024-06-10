@@ -2,6 +2,7 @@ package com.example.plugins
 
 import com.example.room.RoomController
 import com.example.routes.chatSockets
+import com.example.routes.getAllMembers
 import com.example.routes.getAllMessages
 import io.ktor.server.application.Application
 import io.ktor.server.routing.routing
@@ -14,5 +15,6 @@ fun Application.configureRouting() {
     routing {
         chatSockets(roomController)
         getAllMessages(roomController)
+        getAllMembers(roomController)
     }
 }

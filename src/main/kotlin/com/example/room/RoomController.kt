@@ -2,6 +2,7 @@ package com.example.room
 
 import com.example.data.MessageDataSource
 import com.example.data.model.Message
+import com.example.data.model.Users
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import kotlinx.serialization.encodeToString
@@ -18,6 +19,15 @@ class RoomController(
             throw MemberAlreadyExistException()
         }
         members[member.userName] = Member(member.userName, member.sessionId, member.sockets)
+    }
+
+    fun getAllMembers(): List<Users> {
+        return members.keys().toList().map {
+            Users(
+                name = it,
+                sessionId = members[it]?.sessionId.toString()
+            )
+        }
     }
 
 

@@ -18,6 +18,7 @@ import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.channels.consumeEach
 
+
 fun Route.chatSockets(roomController: RoomController) {
     webSocket("/chat-socket") {
         val session = call.sessions.get<ChatSession>()
@@ -27,13 +28,13 @@ fun Route.chatSockets(roomController: RoomController) {
         }
 
         try {
-            roomController.join(
-                Member(
-                    userName = session.userName,
-                    sessionId = session.sessionId,
-                    sockets = this
-                )
+
+            val member = Member(
+                userName = session.userName,
+                sessionId = session.sessionId,
+                sockets = this
             )
+            roomController.join(member)
 
             incoming.consumeEach { frame ->
                 if (frame is Frame.Text) {
@@ -41,6 +42,8 @@ fun Route.chatSockets(roomController: RoomController) {
                         senderUserName = session.userName,
                         message = frame.readText()
                     )
+
+                    println("name = ${session.userName} \n message = ${frame.readText()}")
                 }
             }
 
@@ -51,6 +54,15 @@ fun Route.chatSockets(roomController: RoomController) {
         } finally {
             roomController.tryDisconnect(session.userName)
         }
+    }
+}
+
+fun Route.getAllMembers(roomController: RoomController) {
+    get("/users") {
+        call.respond(
+            HttpStatusCode.OK,
+            roomController.getAllMembers()
+        )
     }
 }
 
