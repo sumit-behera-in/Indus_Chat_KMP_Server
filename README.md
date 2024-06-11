@@ -6,7 +6,7 @@
 
 <ul> 
 <li> REST api with websocket feature added </li>
-<li> http://localhost:8080/messages  for all messages</li>
-<li> http://localhost:8080/users  for all active users</li>
-<li> ws://192.168.56.1:8080/chat-socket?username={username} provide username to connect to the websocket</li>
+<li><a href="https://indus-chat-kmp-server.onrender.com/messages"> https://indus-chat-kmp-server.onrender.com/messages for all messages </a></li>
+<li><a href="https://indus-chat-kmp-server.onrender.com/users"> https://indus-chat-kmp-server.onrender.com/users for all active users</a></li>
+<li><a href="ws://indus-chat-kmp-server.onrender.com/chat-socket?username=Sumit"> ws://indus-chat-kmp-server.onrender.com/chat-socket?username=Sumit provide username to connect to the websocket </a></li>
 </ul>
