@@ -5,6 +5,9 @@ import com.example.data.model.Message
 import com.example.data.model.Users
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentHashMap
@@ -48,10 +51,26 @@ class RoomController(
         return messageDataSource.getAllMessages()
     }
 
-    suspend fun tryDisconnect(userName: String) {
-        members[userName]?.sockets?.close()
-        if (members.containsKey(userName)) {
-            members.remove(userName)
+    suspend fun tryDisconnect(userName: String) = coroutineScope {
+        val user = members[userName] ?: return@coroutineScope // Handle null user
+        val sockets = user.sockets
+
+        launch {
+            try {
+                val userData = Json.encodeToString(Users(userName, "Disconnected"))
+                sockets.send(Frame.Text(userData))
+            } catch (e: Exception) {
+                // Handle send error
+                println("Error sending disconnect message: $e")
+            } finally {
+                try {
+                    sockets.close()
+                } catch (e: Exception) {
+                    // Handle close error
+                    println("Error closing WebSocket: $e")
+                }
+                members.remove(userName)
+            }
         }
     }
 }

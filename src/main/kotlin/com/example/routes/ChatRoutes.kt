@@ -1,5 +1,6 @@
 package com.example.routes
 
+import com.example.data.model.Users
 import com.example.room.Member
 import com.example.room.MemberAlreadyExistException
 import com.example.room.RoomController
@@ -17,24 +18,33 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.delay
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 
 fun Route.chatSockets(roomController: RoomController) {
     webSocket("/chat-socket") {
-        val session = call.sessions.get<ChatSession>()
+        val userName = call.request.queryParameters["userName"] ?: "Guest"
+        val session = call.sessions.get<ChatSession>()?.copy(
+            userName = userName
+        )
+
         if (session == null) {
             close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No session"))
             return@webSocket
         }
 
         try {
-
             val member = Member(
                 userName = session.userName,
                 sessionId = session.sessionId,
                 sockets = this
             )
             roomController.join(member)
+
+            val userData = Json.encodeToString(Users(session.userName,"Connected"))
+            outgoing.send(Frame.Text(userData))
 
             incoming.consumeEach { frame ->
                 if (frame is Frame.Text) {
@@ -52,7 +62,9 @@ fun Route.chatSockets(roomController: RoomController) {
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
-            roomController.tryDisconnect(session.userName)
+            val userData = Json.encodeToString(Users(session.userName,"disConnected"))
+            outgoing.send(Frame.Text(userData))
+            //roomController.tryDisconnect(session.userName)
         }
     }
 }
