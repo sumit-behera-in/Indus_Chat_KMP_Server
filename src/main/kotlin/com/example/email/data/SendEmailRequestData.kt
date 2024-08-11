@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class SendEmailRequestData(
     val email:String,
     val subject:String,
-    val message:String
+   // val message:String
 )

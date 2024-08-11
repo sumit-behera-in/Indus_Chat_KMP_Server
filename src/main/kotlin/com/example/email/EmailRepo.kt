@@ -12,7 +12,7 @@ class EmailRepo(private val emailService: EmailService) {
             EmailData(
                 emailTo = data.email,
                 subject = data.subject,
-                message = data.message,
+                message = generateEmailContent(),
                 emailFrom = AppSecrets.EMAIL_FROM
             )
         )
@@ -22,4 +22,24 @@ class EmailRepo(private val emailService: EmailService) {
             message = if (result) "Successfully sent email" else "Failed to send email"
         )
     }
+
+
+    private fun generateEmailContent(): String {
+        val chars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        val otp:String = (1..6) .map { chars.random() }.joinToString("")
+        return """
+        <html>
+        <body>
+            <p>Dear User,</p> <br>
+            <p>Your One Time Password (OTP) for login: </p><br> 
+            <center><b style="font-size: 1.5em;"><font color="red">$otp</font></b></center>
+            <p>Please note that the OTP is valid for only one session</p><br>
+            <p>Regards,</p>
+            <p><b>Team ChatServer</b></p>
+            <a href="mailto:s1508b@gmail.com">s1508b@gmail.com</a>
+        </body>
+        </html>
+    """.trimIndent()
+    }
+
 }

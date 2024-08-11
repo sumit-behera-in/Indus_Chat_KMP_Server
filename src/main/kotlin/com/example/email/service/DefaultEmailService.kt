@@ -13,7 +13,8 @@ class DefaultEmailService(
             .from("Chat Server", data.emailFrom)
             .to(userName, data.emailTo)
             .withSubject(data.subject)
-            .withPlainText(data.message)
+            //.withPlainText(data.message)
+            .withHTMLText(data.message)
             .buildEmail()
         return try {
             mailer.sendMail(email)
