@@ -1,7 +1,10 @@
 package com.example.plugins
 
+import com.example.email.EmailRepo
+import com.example.email.service.EmailService
 import com.example.room.RoomController
 import com.example.routes.chatSockets
+import com.example.routes.emailRoute
 import com.example.routes.getAllMembers
 import com.example.routes.getAllMessages
 import io.ktor.server.application.Application
@@ -15,6 +18,8 @@ fun Application.configureRouting() {
 
     val roomController by inject<RoomController>()
 
+    val emailRepo by inject<EmailRepo>()
+
     routing {
         get("/") {
             call.respondText("welcome to sample app")
@@ -22,5 +27,6 @@ fun Application.configureRouting() {
         chatSockets(roomController)
         getAllMessages(roomController)
         getAllMembers(roomController)
+        emailRoute(emailRepo)
     }
 }
